@@ -1,0 +1,45 @@
+name: infra AWS ECR
+
+on:
+  workflow_dispatch:
+defaults:
+  run:
+    working-directory: infra/
+
+
+env: 
+  REGION: us-east-1
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    name: deploy infra ecr
+    steps:
+      - uses: actions/checkout@v3
+      - name: Configure AWS credentials from net account
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_CLOUD }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY_CLOUD }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN_CLOUD }}
+          aws-region: ${{ env.REGION }}
+
+      - name: Install dependencies and AWS Cdk
+        run: |
+          sudo npm install -g aws-cdk
+          npm install
+      
+      - name: CDK Deploy EcrStack
+        env:
+          REGION: ${{ env.REGION }}
+          ACCOUNT_ID: ${{ secrets.ACCOUNT_ID }}
+          INFRA_STACK_NAME: EcrStack
+          ENV_CONFIG_NAME: infraECR
+          ECR_REPOSITORIES: "capitalscaffoldingecr,capitalscaffolding-prod,scaffm8-development,scaffm8-pdn,less-pdn,less-dev,crockett-dev,crockett-pdn,example-dev,example-pdn"
+        run: |
+          ENV_CONFIG_NAME=${{ env.ENV_CONFIG_NAME }}
+          INFRA_STACK_NAME=${{ env.INFRA_STACK_NAME }}
+          REGION=${{ env.REGION }}
+          ACCOUNT_ID=${{ env.ACCOUNT_ID }}
+          ECR_REPOSITORIES=${{ env.ECR_REPOSITORIES }}
+          cdk deploy ${{ env.INFRA_STACK_NAME }} -c config=${{ env.ENV_CONFIG_NAME }} --require-approval never

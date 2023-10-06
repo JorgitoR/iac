@@ -1,0 +1,183 @@
+
+name: AWS provisioning services
+
+# Only trigger, when the build workflow succeeded
+on:
+  workflow_run:
+    workflows: ["back Scaffm8", "back crockett", "back les", "back Capital-scaffolding"]
+    types:
+      - completed
+
+env:
+  AWS_REGION: us-east-1  
+  ACCOUNT_ID: "526382770485"
+
+jobs:
+  Scaffm8:
+    name: Scaffm8
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Configure AWS credentials from dev account
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_CLOUD }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY_CLOUD }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Sleep for 20 seconds
+        uses: jakejarvis/wait-action@master
+        with:
+          time: '20s'
+      
+      - name: Install dependencies and aws cdk
+        working-directory: infra/
+        run: |
+          sudo npm install -g aws-cdk
+          npm install
+
+      - name: AWS Route 53
+        working-directory: infra/
+        env:
+          INFRA_ROUTE_STACK_NAME: scaffm8-route-dev
+          INFRA_ROUTE_CONFIG: Route53
+          DOMAIN_NAME: scaffm8.net
+          HOSTED_ZONE_ID: Z07176612B26L8JDY4T96
+          INFRA_CLUSTER: whitelabel-dev
+          SITE_SUB_DOMAIN: scaffm8-back
+          IDENTIFIER_CLONE: scaffm8
+          ECR_REPOSITORY: scaffm8-development
+        run: |
+          ACCOUNT_ID=${{ env.ACCOUNT_ID }}
+          REGION=${{ env.AWS_REGION }}
+          INFRA_ROUTE_STACK_NAME=${{ env.INFRA_ROUTE_STACK_NAME }}
+          INFRA_ROUTE_CONFIG=${{ env.INFRA_ROUTE_CONFIG }}
+          HOSTED_ZONE_ID=${{ env.HOSTED_ZONE_ID }}
+          SITE_SUB_DOMAIN=${{ env.SITE_SUB_DOMAIN }}
+          DOMAIN_NAME=${{ env.DOMAIN_NAME }}
+          IDENTIFIER_CLONE=${{ env.IDENTIFIER_CLONE }}-dev
+          INFRA_CLUSTER=${{ env.INFRA_CLUSTER }}
+          ECR_REPOSITORY=${{ env.ECR_REPOSITORY }}
+          cdk deploy ${{ env.INFRA_ROUTE_STACK_NAME }} -c config=${{ env.INFRA_ROUTE_CONFIG }} --require-approval never
+
+  crockett:
+    name: crockett
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Configure AWS credentials from dev account
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_CLOUD }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY_CLOUD }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Sleep for 20 seconds
+        uses: jakejarvis/wait-action@master
+        with:
+          time: '20s'
+      
+      - name: Install dependencies and aws cdk
+        working-directory: infra/
+        run: |
+          sudo npm install -g aws-cdk
+          npm install
+
+      - name: AWS Route 53 DEV
+        working-directory: infra/
+        env:
+          INFRA_ROUTE_STACK_NAME: crockett-route-dev
+          INFRA_ROUTE_CONFIG: Route53
+          DOMAIN_NAME: scaffm8.net
+          HOSTED_ZONE_ID: Z07176612B26L8JDY4T96
+          INFRA_CLUSTER: whitelabel-dev
+          SITE_SUB_DOMAIN: crockett-back
+          IDENTIFIER_CLONE: crockett
+          ECR_REPOSITORY: crockett-dev
+        run: |
+          ACCOUNT_ID=${{ env.ACCOUNT_ID }}
+          REGION=${{ env.AWS_REGION }}
+          INFRA_ROUTE_STACK_NAME=${{ env.INFRA_ROUTE_STACK_NAME }}
+          INFRA_ROUTE_CONFIG=${{ env.INFRA_ROUTE_CONFIG }}
+          HOSTED_ZONE_ID=${{ env.HOSTED_ZONE_ID }}
+          SITE_SUB_DOMAIN=${{ env.SITE_SUB_DOMAIN }}
+          DOMAIN_NAME=${{ env.DOMAIN_NAME }}
+          IDENTIFIER_CLONE=${{ env.IDENTIFIER_CLONE }}-dev
+          INFRA_CLUSTER=${{ env.INFRA_CLUSTER }}
+          ECR_REPOSITORY=${{ env.ECR_REPOSITORY }}
+          cdk deploy ${{ env.INFRA_ROUTE_STACK_NAME }} -c config=${{ env.INFRA_ROUTE_CONFIG }} --require-approval never
+
+      - name: AWS Route 53 PDN
+        working-directory: infra/
+        env:
+          INFRA_ROUTE_STACK_NAME: crockett-route-pdn
+          INFRA_ROUTE_CONFIG: Route53
+          DOMAIN_NAME: scaffm8.co.nz
+          HOSTED_ZONE_ID: Z0793601ORQ08J23KVBA
+          INFRA_CLUSTER: whitelabel-prod
+          SITE_SUB_DOMAIN: crockett-back
+          IDENTIFIER_CLONE: crockett
+          ECR_REPOSITORY: crockett-pdn
+        run: |
+          ACCOUNT_ID=${{ env.ACCOUNT_ID }}
+          REGION=${{ env.AWS_REGION }}
+          INFRA_ROUTE_STACK_NAME=${{ env.INFRA_ROUTE_STACK_NAME }}
+          INFRA_ROUTE_CONFIG=${{ env.INFRA_ROUTE_CONFIG }}
+          HOSTED_ZONE_ID=${{ env.HOSTED_ZONE_ID }}
+          SITE_SUB_DOMAIN=${{ env.SITE_SUB_DOMAIN }}
+          DOMAIN_NAME=${{ env.DOMAIN_NAME }}
+          IDENTIFIER_CLONE=${{ env.IDENTIFIER_CLONE }}-pdn
+          INFRA_CLUSTER=${{ env.INFRA_CLUSTER }}
+          ECR_REPOSITORY=${{ env.ECR_REPOSITORY }}
+          cdk deploy ${{ env.INFRA_ROUTE_STACK_NAME }} -c config=${{ env.INFRA_ROUTE_CONFIG }} --require-approval never
+
+  les:
+    name: les
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Configure AWS credentials from dev account
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_CLOUD }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY_CLOUD }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Sleep for 20 seconds
+        uses: jakejarvis/wait-action@master
+        with:
+          time: '20s'
+      
+      - name: Install dependencies and aws cdk
+        working-directory: infra/
+        run: |
+          sudo npm install -g aws-cdk
+          npm install
+
+      - name: AWS Route 53
+        working-directory: infra/
+        env:
+          INFRA_ROUTE_STACK_NAME: les-route-pdn
+          INFRA_ROUTE_CONFIG: Route53
+          DOMAIN_NAME: scaffm8.co.nz
+          HOSTED_ZONE_ID: Z0793601ORQ08J23KVBA
+          INFRA_CLUSTER: whitelabel-prod
+          SITE_SUB_DOMAIN: les-back
+          IDENTIFIER_CLONE: les
+          ECR_REPOSITORY: less-pdn
+        run: |
+          ACCOUNT_ID=${{ env.ACCOUNT_ID }}
+          REGION=${{ env.AWS_REGION }}
+          INFRA_ROUTE_STACK_NAME=${{ env.INFRA_ROUTE_STACK_NAME }}
+          INFRA_ROUTE_CONFIG=${{ env.INFRA_ROUTE_CONFIG }}
+          HOSTED_ZONE_ID=${{ env.HOSTED_ZONE_ID }}
+          SITE_SUB_DOMAIN=${{ env.SITE_SUB_DOMAIN }}
+          DOMAIN_NAME=${{ env.DOMAIN_NAME }}
+          IDENTIFIER_CLONE=${{ env.IDENTIFIER_CLONE }}-pdn
+          INFRA_CLUSTER=${{ env.INFRA_CLUSTER }}
+          ECR_REPOSITORY=${{ env.ECR_REPOSITORY }}
+          cdk deploy ${{ env.INFRA_ROUTE_STACK_NAME }} -c config=${{ env.INFRA_ROUTE_CONFIG }} --require-approval never
+

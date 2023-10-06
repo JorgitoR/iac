@@ -1,0 +1,137 @@
+name: back Scaffm8
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "back/scaffm8/**"
+
+defaults:
+  run:
+    working-directory: back/scaffm8
+
+env:
+  AWS_REGION: us-east-1  
+  ACCOUNT_ID: "526382770485"
+
+  SITE_SUB_DOMAIN: 'scaffm8-back'
+  IDENTIFIER_CLONE: scaffm8
+
+  DB_HOST: scaffm8.cfkxx4z3msvi.us-east-2.rds.amazonaws.com
+  DB_PORT: 5432
+  DB_USER: postgres
+  DB_PASSWORD: soluntech123
+  DB_NAME: postgres
+
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    name: continue integration
+    steps:
+      - uses: actions/checkout@v3
+      - name: Configure AWS credentials from net account
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_CLOUD }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY_CLOUD }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN_CLOUD }}
+          aws-region: ${{ env.AWS_REGION }}
+  
+  dev:
+    needs: ci
+    name: Environment Dev
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Set Tag Number
+        id: tag-number
+        run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
+      - name: Check Tag Release
+        env:
+          RELEASE_VERSION: ${{ steps.tag-number.outputs.tag }}
+        run: |
+          echo $RELEASE_VERSION
+          echo ${{ steps.vars.outputs.tag }}
+      - name: Configure AWS credentials from dev account
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_CLOUD }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY_CLOUD }}
+          aws-region: ${{ env.AWS_REGION }}
+      
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+          ECR_REPOSITORY: scaffm8-development
+        run: |
+         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
+         docker push -a $ECR_REGISTRY/$ECR_REPOSITORY
+         echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+
+      - name: Install dependencies and aws cdk
+        working-directory: infra/
+        run: |
+          sudo npm install -g aws-cdk
+          npm install
+      - name: Fill in the new image ID in the Amazon ECS task definition
+        working-directory: infra/
+        env:
+          NODE_ENV: development
+          AWS_S3_REGION: ${{ env.AWS_REGION }}
+          INFRA_ECS_CONFIG: infraScaffm8
+          INFRA_STACK_NAME: ${{ env.IDENTIFIER_CLONE }}-dev
+          INFRA_ECS_VPC_CLUSTER: InfraEcsEc2dev
+          INFRA_VPC_NAME: vpc-whitelabel 
+          INFRA_CLUSTER: whitelabel-dev 
+          PORT: 3000 
+       
+          SECRET_AUTH: scaffm8
+          PORTAL_NAME: Scaffm8
+          URL_FRONTEND: "https://scaffm8.scaffm8.net"
+
+          SMTP_EMAIL: support@scaffm8.co.nz
+          SMTP_PASSWORD: Sc@ffm8!
+    
+          ECR_REPOSITORY: scaffm8-development
+          ECR_IMAGE_URI: 526382770485.dkr.ecr.us-east-1.amazonaws.com/scaffm8-development:latest
+          S3_BUCKET: true
+          S3_NAME:  ${{ env.IDENTIFIER_CLONE }}-526382770485back-dev
+          S3: true
+
+        run: |
+          ACCOUNT_ID=${{ env.ACCOUNT_ID }}
+          REGION=${{ env.AWS_REGION }}
+          NODE_ENV=${{ env.NODE_ENV }}
+          SECRET_AUTH=${{ env.SECRET_AUTH }}
+          PORTAL_NAME=${{ env.PORTAL_NAME }}
+          URL_FRONTEND=${{ env.URL_FRONTEND }}
+          DB_HOST=${{ env.DB_HOST }}
+          DB_PORT=${{ env.DB_PORT }}
+          DB_USER=${{ env.DB_USER }}
+          DB_PASSWORD=${{ env.DB_PASSWORD }}
+          DB_NAME=${{ env.DB_NAME }}
+          SMTP_EMAIL=${{ env.SMTP_EMAIL }}
+          SMTP_PASSWORD=${{ env.SMTP_PASSWORD }}
+          AWS_S3_REGION=${{ env.AWS_S3_REGION }}
+          S3_NAME=${{ env.S3_NAME }}
+          S3=${{ env.S3 }}
+          ECR_REPOSITORY=${{ env.ECR_REPOSITORY }}
+          ECR_IMAGE_URI=${{ env.ECR_IMAGE_URI }}
+          PORT=${{ env.PORT }}
+          INFRA_ECS_CONFIG=${{ env.INFRA_ECS_CONFIG }}
+          INFRA_STACK_NAME=${{ env.INFRA_STACK_NAME }}
+          INFRA_CLUSTER=${{ env.INFRA_CLUSTER }}
+          INFRA_ECS_VPC_CLUSTER=${{ env.INFRA_ECS_VPC_CLUSTER }}
+          INFRA_VPC_NAME=${{ env.INFRA_VPC_NAME }}
+          cdk deploy ${{ env.INFRA_STACK_NAME }} -c config=${{ env.INFRA_ECS_CONFIG }} --require-approval never

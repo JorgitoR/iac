@@ -1,0 +1,6 @@
+projectKey=scaffm8
+serverUrl=https://sonarqube.soluntech.com
+serverVersion=8.9.9.56886
+dashboardUrl=https://sonarqube.soluntech.com/dashboard?id=scaffm8
+ceTaskId=AYjat1KnEnmCjW1WgAsC
+ceTaskUrl=https://sonarqube.soluntech.com/api/ce/task?id=AYjat1KnEnmCjW1WgAsC

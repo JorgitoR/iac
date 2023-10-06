@@ -1,0 +1,27 @@
+name: Send Code Review
+on:
+  workflow_call:
+    inputs:
+      repoName:
+        required: true
+        type: string
+      repoOwner:
+        required: true
+        type: string
+      pullNumber:
+        required: true
+        type: string
+      ghToken:
+        required: false
+        type: string
+jobs:
+  sendReview:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy Stage
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: 'https://kpi.soluntech.com/v1/codeReview'
+          method: 'POST'
+          customHeaders: '{"Content-Type": "application/json"}'
+          data: '{"repoName": "${{inputs.repoName}}", "repoOwner": "${{inputs.repoOwner}}", "pullNumber":"${{inputs.pullNumber}}", "ghToken": "${{inputs.ghToken}}"}'

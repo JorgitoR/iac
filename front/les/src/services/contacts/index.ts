@@ -1,0 +1,5 @@
+export * from './createContact'
+export * from './getAllContacts'
+export * from './getContactByID'
+export * from './getContactsByClientID'
+export * from './updateContact'

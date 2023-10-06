@@ -1,0 +1,9 @@
+scaffm8:
+  - 'back/scaffm8'
+  - 'front/scaffm8'
+
+snyk: 
+- any: ['*/.snyk']
+
+sonar-properties: 
+- any: ['*/sonar-project.properties']

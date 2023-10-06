@@ -1,0 +1,7 @@
+.github/ @soluntech/coe 
+infra/ @soluntech/scaffm8
+**/.snyk @soluntech/scaffm8
+**/sonar-project.properties @scaffm8/scaffm8
+
+back/cloud-github/functions/create-secrets/ @scaffm8/scaffm8
+front/scaffm8 @scaffm8/scaffm8

@@ -1,0 +1,15 @@
+name: Code Review
+
+on:
+  pull_request_review:
+    types: [ submitted ]
+
+jobs:
+  ci:
+    name: Code Review
+    uses: scaffm8/scaffm8-monorepository/.github/workflows/code-review-reusable.yml@main
+    with:
+      repoName: ${{github.repository}}
+      repoOwner: ${{github.repository_owner}}
+      pullNumber: ${{github.ref}}
+      ghToken: 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

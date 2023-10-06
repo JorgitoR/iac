@@ -1,0 +1,44 @@
+name: infra AWS RDS
+
+on:
+  workflow_dispatch:
+defaults:
+  run:
+    working-directory: infra/
+
+env:
+  REGION: 'us-east-1'
+  ACCOUNT_ID: "526382770485"
+  INFRA_STACK_NAME: Infra-Rds
+  INFRA_CONFIG: InfraRds
+  AWS_RDS: true
+  RDS_INSTANCE: "cloneuno,clonedos,clonetrews"
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    name: deploy infra rds
+    steps:
+      - uses: actions/checkout@v3
+      - name: Configure AWS credentials from net account
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_CLOUD }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY_CLOUD }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN_CLOUD }}
+          aws-region: ${{ env.REGION }}
+
+      - name: Install dependencies and AWS Cdk
+        run: |
+          sudo npm install -g aws-cdk
+          npm install
+      
+      - name: CDK Deploy AWS RDS
+        run: |
+          INFRA_CONFIG=${{ env.INFRA_CONFIG }}
+          INFRA_STACK_NAME=${{ env.INFRA_STACK_NAME }}
+          REGION=${{ env.REGION }}
+          ACCOUNT_ID=${{ env.ACCOUNT_ID }}
+          RDS_INSTANCE=${{ env.RDS_INSTANCE }}
+          AWS_RDS=${{ env.AWS_RDS }}
+          cdk deploy ${{ env.INFRA_STACK_NAME }} -c config=${{ env.INFRA_CONFIG }} --require-approval never

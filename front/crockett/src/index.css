@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    font-family: (--font-family);
+}    
+
+.text-2xs {
+  font-size: 0.6rem;
+}
+
+.fnssdt .p-datatable-wrapper{
+  padding: 0px !important;
+}
+
+div.p-dropdown.p-component.p-inputwrapper.p-inputwrapper-filled {
+  height: 2rem;
+  align-items: center;
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  src: url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
+}
