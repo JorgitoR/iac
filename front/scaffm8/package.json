@@ -9,7 +9,7 @@
     "@fullcalendar/react": "^6.1.8",
     "@fullcalendar/resource": "^6.1.8",
     "@fullcalendar/resource-timeline": "^6.1.8",
-    "@fullcalendar/timegrid": "^6.1.8",
+    "@fullcalendar/timegrid": "^6.1.9",
     "@headlessui/react": "^1.7.14",
     "@heroicons/react": "^2.0.16",
     "@react-pdf/renderer": "^3.1.9",
