@@ -28,7 +28,7 @@
     "@types/styled-components": "^5.1.26",
     "clsx": "^1.2.1",
     "eslint-config-prettier": "8.8.0",
-    "formik": "^2.2.9",
+    "formik": "^2.4.5",
     "heroicons": "^2.0.16",
     "intersection-observer": "^0.12.2",
     "moment": "^2.29.4",
