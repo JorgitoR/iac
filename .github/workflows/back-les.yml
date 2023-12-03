@@ -31,7 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     name: continue integration
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Configure AWS credentials from net account
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -47,7 +47,7 @@ jobs:
     environment: pdn
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Set Tag Number
         id: tag-number
         run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
