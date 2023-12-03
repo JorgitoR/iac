@@ -96,7 +96,7 @@ jobs:
           cdk deploy ${{ env.INFRA_STACK_NAME }} -c config=${{ env.INFRA_CONFIG_FRONT }} --require-approval never
       
       - name: Make envfile
-        uses: SpicyPizza/create-envfile@v1.3
+        uses: SpicyPizza/create-envfile@v2.0
         with:
           envkey_REACT_APP_PORT: ${{ env.PORT }}
           envkey_REACT_APP_URL_BACKEND: ${{ env.REACT_APP_URL_BACKEND_DEV }}
@@ -167,7 +167,7 @@ jobs:
           cdk deploy ${{ env.INFRA_STACK_NAME }} -c config=${{ env.INFRA_CONFIG_FRONT }} --require-approval never
       
       - name: Make envfile
-        uses: SpicyPizza/create-envfile@v1.3
+        uses: SpicyPizza/create-envfile@v2.0
         with:
           envkey_REACT_APP_PORT: ${{ env.PORT }}
           envkey_REACT_APP_URL_BACKEND: ${{ env.REACT_APP_URL_BACKEND_PDN }}
